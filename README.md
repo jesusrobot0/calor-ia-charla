@@ -1,36 +1,166 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Claude Code + SDD: Flujo Rápido
 
-## Getting Started
+Guía para replicar el flujo Spec-Driven Development con Claude Code visto en la clase.
 
-First, run the development server:
+---
+
+## 1. Setup del Proyecto
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Crear proyecto Next.js
+npx create-next-app@latest mi-app --typescript --tailwind --eslint --app --src-dir
+
+cd mi-app
+
+# Instalar Zustand (o tus dependencias)
+npm install zustand
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 2. Estructura de Claude
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# Crear carpetas
+mkdir -p .claude/rules .claude/agents .claude/skills specs
+```
 
-## Learn More
+### Archivos a crear:
 
-To learn more about Next.js, take a look at the following resources:
+```
+mi-app/
+├── CLAUDE.md              # Config global del proyecto
+├── .claude/
+│   ├── rules/             # Guías de código
+│   │   └── frontend.md
+│   ├── agents/            # Roles especializados
+│   │   ├── architect.md   # Genera specs
+│   │   ├── pm.md          # Divide en fases
+│   │   ├── frontend.md    # Implementa
+│   │   └── qa.md          # Valida
+│   └── skills/            # Procedimientos
+│       └── commit/
+│           └── SKILL.md
+└── specs/                 # Specs y planes
+    ├── SPEC.md
+    └── PLAN.md
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 3. Iniciar Claude Code
 
-## Deploy on Vercel
+```bash
+claude
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Dentro de Claude Code:
+```
+/init
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 4. Flujo SDD
+
+### Paso 1: Spec (con @architect)
+
+```
+@architect Quiero crear [DESCRIPCIÓN DE TU APP].
+
+Funcionalidades:
+- Feature 1
+- Feature 2
+
+Stack: Next.js, TypeScript, Zustand, Tailwind
+
+Genera specs/SPEC.md
+```
+
+### Paso 2: Plan (con @pm)
+
+```
+@pm Lee specs/SPEC.md y crea un plan de implementación dividido en fases de 5-10 min cada una. Guarda en specs/PLAN.md
+```
+
+### Paso 3: Implementar (con @frontend)
+
+```
+@frontend Implementa la Fase 1 según specs/PLAN.md
+```
+
+### Paso 4: Validar (con @qa)
+
+```
+@qa Revisa el código de la Fase 1
+```
+
+### Paso 5: Commit (con /commit)
+
+```
+/commit
+```
+
+### Repetir pasos 3-5 para cada fase.
+
+---
+
+## 5. Ralph Loop (Opcional)
+
+Para tareas autónomas con criterio claro de éxito:
+
+```
+# Instalar plugin
+/plugin install ralph-loop@claude-plugins-official
+
+# Ejecutar
+/ralph-loop:ralph-loop "TAREA. Cuando termines escribe DONE." --max-iterations 5 --completion-promise "DONE"
+```
+
+---
+
+## Resumen Visual
+
+```
+┌─────────────┐
+│  IDEA       │
+└─────┬───────┘
+      ▼
+┌─────────────┐
+│ @architect  │ → specs/SPEC.md
+└─────┬───────┘
+      ▼
+┌─────────────┐
+│ @pm         │ → specs/PLAN.md
+└─────┬───────┘
+      ▼
+┌─────────────────────────────────┐
+│  Por cada fase:                 │
+│                                 │
+│  @frontend → implementa         │
+│  @qa       → valida             │
+│  /commit   → guarda             │
+│                                 │
+└─────────────────────────────────┘
+      ▼
+┌─────────────┐
+│  APP LISTA  │
+└─────────────┘
+```
+
+---
+
+## Tips
+
+- **RAM vs Disco**: Lo que importa mañana → al disco (archivos)
+- **Fases pequeñas**: 5-10 min máximo
+- **Verificar siempre**: `npm run lint && npm run type-check`
+- **Un commit por fase**: Atómicos y descriptivos
+- **Mobile-first**: Diseña para móvil primero
+
+---
+
+## Recursos
+
+- [Claude Code Docs](https://docs.anthropic.com/claude-code)
+- [MCP Protocol](https://modelcontextprotocol.io)
