@@ -1,111 +1,108 @@
-# Skill: Review Checklist
+---
+name: review-checklist
+description: Revisión estructurada del código de una fase antes de aprobar. Usar para validar calidad de código, TypeScript, React, accesibilidad y estilos.
+disable-model-invocation: true
+allowed-tools: Bash, Read, Grep, Glob
+---
 
-Checklist completo para revisar código antes de aprobar una fase.
+Revisión estructurada del código de una fase implementada en el proyecto calor-ia.
 
-## Uso
-
-Invoca esta skill para hacer una revisión estructurada del código de una fase.
-
-## Checklist
+## Proceso
 
 ### 1. Verificación Automatizada
 
+Ejecutar en orden y reportar resultados:
+
 ```bash
-# Ejecutar en orden y reportar resultados
-npm run type-check    # [ ] Pasa
-npm run lint          # [ ] Pasa
-npm run build         # [ ] Pasa (si aplica)
+npx tsc --noEmit       # Type-check
+npm run lint           # ESLint
+npm run build          # Build de producción (si aplica)
 ```
 
 ### 2. TypeScript Quality
 
-- [ ] **No `any`**: Buscar `any` explícitos o implícitos
-- [ ] **Interfaces definidas**: Props y datos tienen tipos
-- [ ] **Eventos tipados**: `React.MouseEvent`, `React.ChangeEvent`, etc.
-- [ ] **No suppressions**: Sin `@ts-ignore` o `@ts-expect-error`
-- [ ] **Nullability**: Se maneja null/undefined correctamente
+Usar la herramienta Grep (NO bash grep) para buscar problemas:
 
-```bash
-# Buscar any
-grep -r "any" src/ --include="*.ts" --include="*.tsx"
-
-# Buscar ts-ignore
-grep -r "@ts-ignore\|@ts-expect-error" src/
-```
+- Buscar `any` en archivos `.ts` y `.tsx` dentro de `src/`
+- Buscar `@ts-ignore` y `@ts-expect-error` en `src/`
+- Verificar que interfaces y types estén definidos para props y datos
+- Verificar que eventos usen tipos explícitos (`React.MouseEvent`, `React.ChangeEvent`, etc.)
+- Verificar manejo correcto de null/undefined
 
 ### 3. React Best Practices
 
-- [ ] **Hooks al inicio**: useState, useEffect antes de la lógica
-- [ ] **Dependencias useEffect**: Array de dependencias correcto
-- [ ] **Keys en listas**: Cada item tiene key único
-- [ ] **Componentes pequeños**: < 150 líneas idealmente
-- [ ] **Props destructuradas**: En la firma de la función
+- Hooks (useState, useEffect, etc.) al inicio del componente, antes de lógica
+- Array de dependencias correcto en useEffect
+- Key único en cada item de listas renderizadas
+- Componentes menores a 150 líneas idealmente
+- Props destructuradas en la firma de la función
 
 ### 4. Zustand Store (si aplica)
 
-- [ ] **Tipado completo**: State y Actions tipados
-- [ ] **Inmutabilidad**: No mutar estado directamente
-- [ ] **Persist configurado**: Si se requiere persistencia
-- [ ] **Selectores simples**: Evitar re-renders innecesarios
+- State y Actions con tipado completo
+- No mutar estado directamente (usar spread/nuevo objeto)
+- Middleware persist configurado si se requiere persistencia
+- Selectores simples para evitar re-renders innecesarios
 
-### 5. Estilos (Tailwind)
+### 5. Estilos (Tailwind CSS)
 
-- [ ] **Mobile-first**: Sin breakpoints innecesarios para móvil
-- [ ] **Clases organizadas**: Orden lógico (layout → spacing → colors)
-- [ ] **No !important**: Evitar forzar especificidad
-- [ ] **Responsive**: Funciona en diferentes tamaños
+- Mobile-first: estilos base para móvil, breakpoints para desktop
+- Orden de clases: layout -> spacing -> sizing -> typography -> colors -> effects
+- Sin `!important`
+- Funciona en diferentes tamaños de pantalla
 
-### 6. Accesibilidad Básica
+### 6. Accesibilidad
 
-- [ ] **Labels en inputs**: `<label htmlFor="">` o aria-label
-- [ ] **Botones descriptivos**: Texto o aria-label
-- [ ] **Roles semánticos**: `<button>` no `<div onClick>`
-- [ ] **Focus visible**: Se ve qué elemento tiene foco
+- Inputs con `<label htmlFor="">` o `aria-label`
+- Botones con texto descriptivo o `aria-label`
+- Elementos semánticos (`<button>` en vez de `<div onClick>`)
+- Focus visible en elementos interactivos
 
 ### 7. Funcionalidad
 
-- [ ] **Happy path**: El flujo principal funciona
-- [ ] **Edge cases**: Listas vacías, valores límite
-- [ ] **Errores**: Se manejan errores de forma visible
-- [ ] **Persistencia**: Datos sobreviven refresh (si aplica)
+- El flujo principal (happy path) funciona correctamente
+- Edge cases manejados (listas vacías, valores límite)
+- Errores visibles para el usuario
+- Persistencia funciona tras refresh (si aplica)
 
-## Output Template
+## Output
 
-```markdown
-## Review Checklist - Fase [N]
+Reportar usando este formato:
+
+```
+## Review - Fase [N]
 
 ### Automatizado
-- [x] type-check: ✅ 0 errores
-- [x] lint: ✅ 0 errores
-- [ ] build: ⏳ pendiente
+- [ ] type-check: [resultado]
+- [ ] lint: [resultado]
+- [ ] build: [resultado]
 
 ### TypeScript
-- [x] Sin `any`
-- [x] Interfaces definidas
-- [x] Eventos tipados
-- [x] Sin @ts-ignore
-- [x] Nullability OK
+- [ ] Sin `any`
+- [ ] Interfaces/types definidos
+- [ ] Eventos tipados
+- [ ] Sin @ts-ignore/@ts-expect-error
+- [ ] Nullability manejada
 
 ### React
-- [x] Hooks correctos
-- [x] Keys en listas
-- [x] Componentes razonables
+- [ ] Hooks al inicio
+- [ ] Keys en listas
+- [ ] Componentes < 150 líneas
 
 ### Estilos
-- [x] Mobile-first
-- [x] Clases organizadas
+- [ ] Mobile-first
+- [ ] Clases ordenadas
 
 ### Accesibilidad
-- [x] Labels en inputs
-- [x] Botones descriptivos
+- [ ] Labels en inputs
+- [ ] Botones descriptivos
+- [ ] Semántica HTML correcta
 
 ### Funcionalidad
-- [x] Happy path OK
-- [ ] Edge cases: [pendiente probar lista vacía]
+- [ ] Happy path OK
+- [ ] Edge cases manejados
 
 ---
-
-**Resultado**: ✅ APROBADO / ❌ RECHAZADO
-
-**Notas**: [observaciones]
+Resultado: APROBADO / RECHAZADO
+Notas: [observaciones o correcciones necesarias]
 ```
